@@ -18,10 +18,10 @@ namespace Client.Services
 
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                // var response = await client.PostAsync(serverUrl, content);
-                // LoggerService.Info($"Ответ сервера: {response.StatusCode}");
+                var response = client.PostAsync(serverUrl + "/programs", content).Result;
+                LoggerService.Info($"Ответ сервера: {response.StatusCode}");
 
-                LoggerService.Debug($"POST {serverUrl}");
+                LoggerService.Debug($"POST {serverUrl + "/programs"}");
 
                 LoggerService.Info("Отправка завершена");
             }
