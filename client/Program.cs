@@ -1,12 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Win32;
+using Client.Services;
+using Client;
 
 class Program
 {
     static void Main()
     {
         var apps = GetInstalledApps();
+
+        string json = JsonService.SerializeToJson(apps);
+
+        Console.WriteLine("📦 JSON:");
+        Console.WriteLine(json);
     }
 
     static List<InstalledApp> GetInstalledApps()
@@ -53,10 +60,3 @@ class Program
     }
 }
 
-class InstalledApp
-{
-    public string? DisplayName { get; set; }
-    public string? DisplayVersion { get; set; }
-    public string? Publisher { get; set; }
-    public string? InstallDate { get; set; }
-}
