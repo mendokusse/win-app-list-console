@@ -1,6 +1,8 @@
 ﻿using System.Net;
 using System.Text;
 using Server.Services;
+using System.Text.Json;
+using Server;
 
 class Program
 {
@@ -33,8 +35,14 @@ class Program
                 LoggerService.Info($"Получен POST-запрос от {context.Request.RemoteEndPoint}");
                 LoggerService.Debug($"Тело запроса:\n{json}");
 
-                response.StatusCode = 200;
                 byte[] buffer = Encoding.UTF8.GetBytes("OK");
+
+                var apps = JsonSerializer.Deserialize<List<InstalledApp>>(json);
+
+                string clientId = context.Request.RemoteEndPoint?.Address.ToString() ?? "UnknownClient";
+                ExcelService.SavePrograms(apps!, clientId);
+
+                response.StatusCode = 200;
                 response.OutputStream.Write(buffer, 0, buffer.Length);
             }
             else
