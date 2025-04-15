@@ -8,28 +8,74 @@ class Program
 {
     static void Main(string[] args)
     {
-        LoggerService.Info("Запуск приложения.");
+        LoggerService.Info("Запуск приложения");
 
+        bool doPreview = false;
+        bool doSend = false;
         string? serverUrl = null;
 
         for (int i = 0; i < args.Length; i++)
         {
-            if (args[i] == "--url" && i + 1 < args.Length)
+            switch (args[i])
             {
-                serverUrl = args[i + 1];
-                LoggerService.Info($"Указан URL сервера: {serverUrl}");
+                case "--preview":
+                    doPreview = true;
+                    break;
+                case "--send":
+                    doSend = true;
+                    break;
+                case "--url":
+                    if (i + 1 < args.Length)
+                    {
+                        serverUrl = args[i + 1];
+                        LoggerService.Info($"Указан URL сервера: {serverUrl}");
+                        i++;
+                    }
+                    break;
+                case "--help":
+                case "-h":
+                    ShowHelp();
+                    return;
             }
         }
 
-        if (string.IsNullOrEmpty(serverUrl))
+        if (doSend && string.IsNullOrEmpty(serverUrl))
         {
-            LoggerService.Error("Не указан адрес сервера.");
+            LoggerService.Error("Указан флаг --send, но не задан --url.");
             return;
         }
 
         var apps = GetInstalledApps();
+
         string json = JsonService.SerializeToJson(apps);
-        HttpService.SendJson(json, serverUrl);
+
+        if (doPreview)
+        {
+            Console.WriteLine("Программа покажет JSON ниже:");
+            Console.WriteLine(json);
+        }
+
+        if (doSend)
+        {
+            HttpService.SendJson(json, serverUrl!);
+        }
+
+        LoggerService.Info("Программа завершила работу.");
+    }
+
+    static void ShowHelp()
+    {
+        Console.WriteLine(@"
+        Использование:
+        win-app-list-client -- [опции]
+
+        Опции:
+        --preview              Показать JSON в консоли
+        --save                 Сохранить JSON в файл
+        --send                 Отправить JSON на сервер (нужен --url)
+        --url <адрес>          Адрес сервера
+        --help, -h             Показать эту справку
+        ");
     }
 
     static List<InstalledApp> GetInstalledApps()
