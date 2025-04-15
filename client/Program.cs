@@ -12,6 +12,7 @@ class Program
 
         bool doPreview = false;
         bool doSend = false;
+        bool doSave = false;
         string? serverUrl = null;
 
         for (int i = 0; i < args.Length; i++)
@@ -23,6 +24,9 @@ class Program
                     break;
                 case "--send":
                     doSend = true;
+                    break;
+                case "--save":
+                    doSave = true;
                     break;
                 case "--url":
                     if (i + 1 < args.Length)
@@ -53,6 +57,11 @@ class Program
         {
             Console.WriteLine("Программа покажет JSON ниже:");
             Console.WriteLine(json);
+        }
+
+        if (doSave)
+        {
+            SaveService.SaveToFile(json);
         }
 
         if (doSend)
