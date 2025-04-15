@@ -6,10 +6,30 @@ using Client;
 
 class Program
 {
-    static void Main()
+    static void Main(string[] args)
     {
+        LoggerService.Info("Запуск приложения.");
+
+        string? serverUrl = null;
+
+        for (int i = 0; i < args.Length; i++)
+        {
+            if (args[i] == "--url" && i + 1 < args.Length)
+            {
+                serverUrl = args[i + 1];
+                LoggerService.Info($"Указан URL сервера: {serverUrl}");
+            }
+        }
+
+        if (string.IsNullOrEmpty(serverUrl))
+        {
+            LoggerService.Error("Не указан адрес сервера.");
+            return;
+        }
+
         var apps = GetInstalledApps();
         string json = JsonService.SerializeToJson(apps);
+        HttpService.SendJson(json, serverUrl);
     }
 
     static List<InstalledApp> GetInstalledApps()
