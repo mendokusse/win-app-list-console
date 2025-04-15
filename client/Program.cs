@@ -9,18 +9,15 @@ class Program
     static void Main()
     {
         var apps = GetInstalledApps();
-
         string json = JsonService.SerializeToJson(apps);
-
-        Console.WriteLine("📦 JSON:");
-        Console.WriteLine(json);
     }
 
     static List<InstalledApp> GetInstalledApps()
     {
         var result = new List<InstalledApp>();
 
-        // Основные ветки, где хранятся установленные программы
+        LoggerService.Info("Сбор данных о приложениях начат.");
+
         string[] registryKeys = new string[]
         {
             @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall",
@@ -40,7 +37,7 @@ class Program
                         if (subkey == null) continue;
 
                         var name = subkey.GetValue("DisplayName") as string;
-                        if (string.IsNullOrWhiteSpace(name)) continue; // пропускаем системное
+                        if (string.IsNullOrWhiteSpace(name)) continue;
 
                         var app = new InstalledApp
                         {
@@ -55,6 +52,7 @@ class Program
                 }
             }
         }
+        LoggerService.Info($"Найдено {result.Count} установленных программ.");
 
         return result;
     }

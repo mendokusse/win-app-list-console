@@ -14,7 +14,10 @@ namespace Client.Services
                 WriteIndented = true,
                 Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             };
-            return JsonSerializer.Serialize(apps, options);
+
+            var json = JsonSerializer.Serialize(apps, options);
+            LoggerService.Debug($"Тело запроса: {json}");
+            return json;
         }
     }
 }
