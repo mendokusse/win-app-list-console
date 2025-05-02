@@ -43,11 +43,6 @@ class Program
 
                 byte[] buffer = Encoding.UTF8.GetBytes("OK");
 
-                var apps = JsonSerializer.Deserialize<List<InstalledApp>>(json);
-
-                string clientId = context.Request.RemoteEndPoint?.Address.ToString() ?? "UnknownClient";
-                ExcelService.SavePrograms(apps!, clientId);
-
                 response.StatusCode = 200;
                 response.OutputStream.Write(buffer, 0, buffer.Length);
             }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using ClosedXML.Excel;
 using Server;
+using Server.Models;
 
 namespace Server.Services
 {
@@ -59,7 +60,7 @@ namespace Server.Services
             LoggerService.Info($"Данные клиента '{clientId}' сохранены в Excel.");
         }
 
-        private static string SanitizeSheetName(string name)
+        public static string SanitizeSheetName(string name)
         {
             var invalidChars = new[] { ':', '\\', '/', '*', '?', '[', ']' };
             foreach (var c in invalidChars)
