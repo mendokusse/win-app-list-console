@@ -10,6 +10,28 @@ class Program
     static void Main()
     {
         string url = "http://localhost:17177/";
+
+        bool strictMode = false;
+
+        foreach (var arg in Environment.GetCommandLineArgs())
+        {
+            if (arg == "--strict")
+            {
+                strictMode = true;
+                LoggerService.Info("Включён строгий режим проверки клиентов (strict mode).");
+            }
+        }
+
+        var configDir = "config";
+        if (!Directory.Exists(configDir))
+        {
+            Directory.CreateDirectory(configDir);
+        }
+
+        var allowedClientsPath = Path.Combine(configDir, "allowed_clients.txt");
+        var allowedClients = File.Exists(allowedClientsPath)
+            ? new HashSet<string>(File.ReadAllLines(allowedClientsPath))
+            : new HashSet<string>();
         HttpListener listener = new();
         listener.Prefixes.Add(url);
         listener.Prefixes.Add(url + "programs/");
@@ -34,6 +56,19 @@ class Program
                 var clientData = JsonSerializer.Deserialize<ClientData>(json);
 
                 string clientId = ExcelService.SanitizeSheetName($"{clientData?.Hostname}_{clientData?.Username}");
+
+                if (strictMode && !allowedClients.Contains(clientId))
+                {
+                    LoggerService.Error($"Клиент '{clientId}' не разрешён (strict mode).");
+
+                    string unknownClientsPath = Path.Combine(configDir, "unknown_clients.txt");
+                    File.AppendAllText(unknownClientsPath, clientId + Environment.NewLine);
+
+                    response.StatusCode = 403;
+                    response.Close();
+                    continue;
+                }
+
                 ExcelService.SavePrograms(clientData?.Programs ?? new(), clientId);
 
                 Console.WriteLine($"Получен POST-запрос от {context.Request.RemoteEndPoint}");
