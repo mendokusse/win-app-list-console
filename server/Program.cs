@@ -20,6 +20,20 @@ class Program
                 strictMode = true;
                 LoggerService.Info("Включён строгий режим проверки клиентов (strict mode).");
             }
+
+            if (arg == "--help" || arg == "-h")
+            {
+                Console.WriteLine(@"
+                win-app-list-server -- [опции]
+
+                Опции:
+                --strict        Принимать только клиентов из config/allowed_clients.txt
+                --help, -h      Показать эту справку
+
+                По умолчанию сервер принимает запросы от всех клиентов (accept-all).
+                ");
+                return;
+            }
         }
 
         var configDir = "config";
