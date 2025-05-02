@@ -12,6 +12,8 @@ class Program
         HttpListener listener = new();
         listener.Prefixes.Add(url);
         listener.Prefixes.Add(url + "programs/");
+        listener.Prefixes.Add("http://*:17177/programs/");
+        listener.Prefixes.Add("http://*:17177/");
         listener.Start();
 
         Console.WriteLine($"HTTP-сервер запущен по адресу: {url}");
