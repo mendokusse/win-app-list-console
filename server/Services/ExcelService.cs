@@ -33,15 +33,28 @@ namespace Server.Services
             worksheet.Cell(1, 3).Value = "Производитель";
             worksheet.Cell(1, 4).Value = "Дата установки";
 
+            var headerRange = worksheet.Range("A1:D1");
+            headerRange.Style.Font.Bold = true;
+            headerRange.Style.Fill.BackgroundColor = XLColor.LightGray;
+
             for (int i = 0; i < programs.Count; i++)
             {
                 var app = programs[i];
-                worksheet.Cell(i + 2, 1).Value = app.DisplayName;
-                worksheet.Cell(i + 2, 2).Value = app.DisplayVersion;
-                worksheet.Cell(i + 2, 3).Value = app.Publisher;
-                worksheet.Cell(i + 2, 4).Value = app.InstallDate;
+                int row = i + 2;
+
+                worksheet.Cell(row, 1).Value = app.DisplayName;
+                worksheet.Cell(row, 2).Value = app.DisplayVersion;
+                worksheet.Cell(row, 3).Value = app.Publisher;
+                worksheet.Cell(row, 4).Value = app.InstallDate;
+
+                if (DateTime.TryParse(app.InstallDate, out DateTime parsedDate))
+                {
+                    worksheet.Cell(row, 4).Value = parsedDate;
+                    worksheet.Cell(row, 4).Style.DateFormat.Format = "dd.MM.yyyy";
+                }
             }
 
+            worksheet.Columns().AdjustToContents();
             workbook.SaveAs(excelPath);
             LoggerService.Info($"Данные клиента '{clientId}' сохранены в Excel.");
         }
