@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using ClosedXML.Excel;
 using Server;
-using Server.Models;
+using Models;
 
 namespace Server.Services
 {

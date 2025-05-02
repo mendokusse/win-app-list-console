@@ -1,4 +1,4 @@
-namespace Server.Models
+namespace Models
 {
     public class InstalledApp
     {
