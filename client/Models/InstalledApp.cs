@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Client {
+namespace Client.Models {
     public class InstalledApp
     {
         public string? DisplayName { get; set; }

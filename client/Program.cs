@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Win32;
 using Client.Services;
-using Client;
+using Client.Models;
 
 class Program
 {
@@ -50,8 +50,14 @@ class Program
         }
 
         var apps = GetInstalledApps();
+        var clientData = new ClientData
+        {
+            Username = Environment.UserName,
+            Hostname = Environment.MachineName,
+            Programs = apps
+        };
 
-        string json = JsonService.SerializeToJson(apps);
+        string json = JsonService.SerializeToJson(clientData);
 
         if (doPreview)
         {

@@ -3,6 +3,7 @@ using System.Text;
 using Server.Services;
 using System.Text.Json;
 using Server;
+using Server.Models;
 
 class Program
 {
@@ -30,9 +31,12 @@ class Program
             {
                 using var reader = new StreamReader(request.InputStream, request.ContentEncoding);
                 var json = reader.ReadToEnd();
+                var clientData = JsonSerializer.Deserialize<ClientData>(json);
+
+                string clientId = ExcelService.SanitizeSheetName($"{clientData?.Hostname}_{clientData?.Username}");
+                ExcelService.SavePrograms(clientData?.Programs ?? new(), clientId);
 
                 Console.WriteLine($"Получен POST-запрос от {context.Request.RemoteEndPoint}");
-                Console.WriteLine($"Тело запроса:\n{json}");
 
                 LoggerService.Info($"Получен POST-запрос от {context.Request.RemoteEndPoint}");
                 LoggerService.Debug($"Тело запроса:\n{json}");
