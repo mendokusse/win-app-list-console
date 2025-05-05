@@ -77,6 +77,7 @@ namespace Client
                 HttpService.SendJson(json, serverUrl!);
             }
 
+            Console.ReadKey();
             LoggerService.Info("Программа завершила работу.");
         }
 
