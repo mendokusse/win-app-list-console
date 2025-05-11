@@ -4,6 +4,7 @@ using System.IO;
 using ClosedXML.Excel;
 using Server;
 using Models;
+using System.Globalization;
 
 namespace Server.Services
 {
@@ -48,11 +49,17 @@ namespace Server.Services
                 worksheet.Cell(row, 3).Value = app.Publisher;
                 worksheet.Cell(row, 4).Value = app.InstallDate;
 
-                if (DateTime.TryParse(app.InstallDate, out DateTime parsedDate))
+                string[] formats = { "dd.MM.yyyy", "yyyyMMdd" };
+                if (DateTime.TryParseExact(app.InstallDate, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDate))
                 {
                     worksheet.Cell(row, 4).Value = parsedDate;
                     worksheet.Cell(row, 4).Style.DateFormat.Format = "dd.MM.yyyy";
                 }
+                else
+                {
+                    worksheet.Cell(row, 4).Value = app.InstallDate; // если дата не распарсилась — оставить как есть
+                }
+
             }
 
             worksheet.Columns().AdjustToContents();
