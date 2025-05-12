@@ -93,14 +93,22 @@ namespace Server.Services
         {
             var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config", "blacklist.txt");
 
-            LoggerService.Debug($"Загружено запрещённых строк: {blacklist.Count}");
+            LoggerService.Debug($"Попытка загрузки blacklist.txt из: {path}");
 
             if (!File.Exists(path))
+            {
+                LoggerService.Error("Файл blacklist.txt не найден. Чёрный список не будет применён.");
                 return new HashSet<string>();
+            }
 
-            return new HashSet<string>(File.ReadAllLines(path)
+            var lines = File.ReadAllLines(path)
                 .Where(line => !string.IsNullOrWhiteSpace(line))
-                .Select(line => line.Trim()), StringComparer.OrdinalIgnoreCase);
+                .Select(line => line.Trim());
+
+            var result = new HashSet<string>(lines, StringComparer.OrdinalIgnoreCase);
+
+            LoggerService.Debug($"Загружено запрещённых строк: {result.Count}");
+            return result;
         }
     }
 }
