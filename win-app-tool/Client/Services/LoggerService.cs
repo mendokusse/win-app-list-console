@@ -5,7 +5,8 @@ namespace Client.Services
 {
     public static class LoggerService
     {
-        private static string logDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
+        private static string logDirectory = 
+        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
         private static string logFile;
 
         static LoggerService()

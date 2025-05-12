@@ -10,6 +10,7 @@ namespace Server.Services
 {
     public static class ExcelService
     {
+        private static readonly HashSet<string> blacklist = LoadBlacklist();
         private static readonly string outputDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "output");
         private static readonly string excelPath = Path.Combine(outputDir, "installed_programs.xlsx");
 
@@ -57,7 +58,17 @@ namespace Server.Services
                 }
                 else
                 {
-                    worksheet.Cell(row, 4).Value = app.InstallDate; // если дата не распарсилась — оставить как есть
+                    worksheet.Cell(row, 4).Value = app.InstallDate;
+                }
+
+                bool isBlacklisted = blacklist.Any(bad =>
+                    !string.IsNullOrWhiteSpace(app.DisplayName) &&
+                    app.DisplayName.IndexOf(bad, StringComparison.OrdinalIgnoreCase) >= 0);
+
+                if (isBlacklisted)
+                {
+                    LoggerService.Info($"Программа '{app.DisplayName}' попала в чёрный список.");
+                    worksheet.Row(row).Style.Fill.BackgroundColor = XLColor.LightPink;
                 }
 
             }
@@ -76,6 +87,20 @@ namespace Server.Services
             }
 
             return name.Length > 31 ? name.Substring(0, 31) : name;
+        }
+
+        private static HashSet<string> LoadBlacklist()
+        {
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config", "blacklist.txt");
+
+            LoggerService.Debug($"Загружено запрещённых строк: {blacklist.Count}");
+
+            if (!File.Exists(path))
+                return new HashSet<string>();
+
+            return new HashSet<string>(File.ReadAllLines(path)
+                .Where(line => !string.IsNullOrWhiteSpace(line))
+                .Select(line => line.Trim()), StringComparer.OrdinalIgnoreCase);
         }
     }
 }
