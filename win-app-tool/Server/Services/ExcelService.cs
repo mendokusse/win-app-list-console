@@ -76,6 +76,35 @@ namespace Server.Services
             worksheet.Columns().AdjustToContents();
             workbook.SaveAs(excelPath);
             LoggerService.Info($"Данные клиента '{clientId}' сохранены в Excel.");
+
+            // Сохранение в CSV
+            var csvPath = Path.Combine(outputDir, $"{clientId}.csv");
+            using (var writer = new StreamWriter(csvPath))
+            {
+                writer.WriteLine("Название,Версия,Производитель,Дата установки");
+                foreach (var app in programs)
+                {
+                    writer.WriteLine($"\"{app.DisplayName}\",\"{app.DisplayVersion}\",\"{app.Publisher}\",\"{app.InstallDate}\"");
+                }
+            }
+            LoggerService.Info($"CSV-файл клиента '{clientId}' сохранён: {csvPath}");
+
+            // Сохранение в HTML
+            var htmlPath = Path.Combine(outputDir, $"{clientId}.html");
+            using (var html = new StreamWriter(htmlPath))
+            {
+                html.WriteLine("<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><title>Отчёт</title></head><body>");
+                html.WriteLine("<h2>Установленные приложения</h2>");
+                html.WriteLine("<table border='1' cellpadding='5' cellspacing='0'><tr><th>Название</th><th>Версия</th><th>Производитель</th><th>Дата установки</th></tr>");
+
+                foreach (var app in programs)
+                {
+                    html.WriteLine($"<tr><td>{System.Net.WebUtility.HtmlEncode(app.DisplayName)}</td><td>{System.Net.WebUtility.HtmlEncode(app.DisplayVersion)}</td><td>{System.Net.WebUtility.HtmlEncode(app.Publisher)}</td><td>{System.Net.WebUtility.HtmlEncode(app.InstallDate)}</td></tr>");
+                }
+
+                html.WriteLine("</table></body></html>");
+            }
+            LoggerService.Info($"HTML-файл клиента '{clientId}' сохранён: {htmlPath}");
         }
 
         public static string SanitizeSheetName(string name)
