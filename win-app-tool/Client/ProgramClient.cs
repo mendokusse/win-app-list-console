@@ -63,8 +63,14 @@ namespace Client
 
             if (doPreview)
             {
-                Console.WriteLine("Программа покажет JSON ниже:");
-                Console.WriteLine(json);
+                Console.WriteLine("Список установленных приложений:\n");
+                Console.WriteLine($"{"Название",-40} {"Версия",-15} {"Производитель",-25} {"Дата установки",-15}");
+                Console.WriteLine(new string('-', 100));
+
+                foreach (var app in apps)
+                {
+                    Console.WriteLine($"{Truncate(app.DisplayName, 40),-40} {Truncate(app.DisplayVersion, 15),-15} {Truncate(app.Publisher, 25),-25} {app.InstallDate,-15}");
+                }
             }
 
             if (doSave)
@@ -140,6 +146,12 @@ namespace Client
 
             return result;
         }
+
+        static string Truncate(string? input, int maxLength)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return "-";
+            return input.Length > maxLength ? input.Substring(0, maxLength - 1) + "…" : input;
+        }
     }
 }
-
